@@ -30,7 +30,7 @@ fun CourseExpertApp() {
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
-        Text("Life do be like that.")
+        Text("Alanna branch.")
     }
 }
 
