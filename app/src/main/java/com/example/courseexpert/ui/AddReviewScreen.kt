@@ -63,6 +63,7 @@ fun AddReviewScreen() {
                 .padding(8.dp)
         )
 
+        Text("Course Difficulty: $courseDifficulty")
         Slider(
             value = courseDifficulty.toFloat(),
             onValueChange = { courseDifficulty = it.toInt() },
@@ -71,10 +72,9 @@ fun AddReviewScreen() {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp)
-        ) {
-            Text("Course Difficulty: $courseDifficulty")
-        }
+        )
 
+        Text("Professor Difficulty: $professorDifficulty")
         Slider(
             value = professorDifficulty.toFloat(),
             onValueChange = { professorDifficulty = it.toInt() },
@@ -83,9 +83,7 @@ fun AddReviewScreen() {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp)
-        ) {
-            Text("Professor Difficulty: $professorDifficulty")
-        }
+        )
 
         Row(
             modifier = Modifier
@@ -101,6 +99,7 @@ fun AddReviewScreen() {
             )
         }
 
+        Text("Time Spent per Week: $timeSpentPerWeek hours")
         Slider(
             value = timeSpentPerWeek.toFloat(),
             onValueChange = { timeSpentPerWeek = it.toInt() },
@@ -109,9 +108,7 @@ fun AddReviewScreen() {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp)
-        ) {
-            Text("Time Spent per Week: $timeSpentPerWeek hours")
-        }
+        )
 
         Row(
             modifier = Modifier

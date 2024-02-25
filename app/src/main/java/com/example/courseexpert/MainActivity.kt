@@ -45,7 +45,7 @@ fun CourseExpertApp(appNavController: NavHostController = rememberNavController(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
-        var showOnboarding by remember { mutableStateOf(true) }
+        var showOnboarding by remember { mutableStateOf(false) }
 
         val backStackEntry by appNavController.currentBackStackEntryAsState()
         var currentScreen = AppScreens.valueOf(backStackEntry?.destination?.route ?: AppScreens.Search.name)
