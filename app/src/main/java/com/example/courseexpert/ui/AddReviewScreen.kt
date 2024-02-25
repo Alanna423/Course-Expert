@@ -100,7 +100,7 @@ fun AddReviewScreen(reviewDb: FirebaseFirestore) {
         }
         Column(verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(top = 200.dp, bottom = 25.dp)) {
+            modifier = Modifier.padding(top = 190.dp, bottom = 25.dp)) {
             Text("Course Difficulty: $courseDifficulty")
             Slider(
                 value = courseDifficulty.toFloat(),
@@ -135,7 +135,20 @@ fun AddReviewScreen(reviewDb: FirebaseFirestore) {
         }
 
         Row(
-            modifier = Modifier.padding(8.dp, top = 500.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp, top=440.dp, bottom = 20.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text("Did you use Textbook?")
+            Spacer(modifier = Modifier.width(8.dp))
+            Switch(
+                checked = useTextbook,
+                onCheckedChange = { useTextbook = it },
+            )
+        }
+        Row(
+            modifier = Modifier.padding(8.dp, top = 485.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text("Recommend to Others")
@@ -145,24 +158,10 @@ fun AddReviewScreen(reviewDb: FirebaseFirestore) {
                 onCheckedChange = { recommendToOthers = it },
             )
         }
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp).padding(top=450.dp, bottom = 25.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text("Did you use Textbook")
-            Spacer(modifier = Modifier.width(8.dp))
-            Switch(
-                checked = useTextbook,
-                onCheckedChange = { useTextbook = it },
-            )
-        }
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(top = 570.dp)
+            modifier = Modifier.padding(top = 540.dp)
         ) {
             Text("Course Review")
             BasicTextField(
@@ -173,29 +172,26 @@ fun AddReviewScreen(reviewDb: FirebaseFirestore) {
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp)
+                    .padding(start = 8.dp, end = 8.dp, bottom = 5.dp)
                     .background(MaterialTheme.colorScheme.background)
                     .border(1.dp, MaterialTheme.colorScheme.primary)
-                    .padding(16.dp)
-                    .heightIn(min = 100.dp)
+                    .heightIn(min = 80.dp)
             )
-        }
-
-        Button(
-            onClick = {
-                reviewDb.collection("reviews")
-                    .add(Review(courseDepartment,courseNumber,professor))
-                    .addOnSuccessListener { documentReference ->
-                        Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
-                    }
-                    .addOnFailureListener { e ->
-                        Log.w(TAG, "Error adding document", e)
-                    }
-            },
-            modifier = Modifier.padding(8.dp).align(Alignment.BottomCenter)
-        ) {
-            Icon(imageVector = Icons.Default.Send, contentDescription = "Submit")
-            Text("Submit")
+            Button(
+                onClick = {
+                    reviewDb.collection("reviews")
+                        .add(Review(courseDepartment, courseNumber, professor))
+                        .addOnSuccessListener { documentReference ->
+                            Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
+                        }
+                        .addOnFailureListener { e ->
+                            Log.w(TAG, "Error adding document", e)
+                        }
+                },
+            ) {
+                Icon(imageVector = Icons.Default.Send, contentDescription = "Submit")
+                Text("Submit")
+            }
         }
     }
 }
