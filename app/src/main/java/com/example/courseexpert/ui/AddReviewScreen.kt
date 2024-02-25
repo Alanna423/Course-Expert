@@ -52,7 +52,7 @@ import com.example.courseexpert.R
 
 
 @Composable
-fun AddReviewScreen(reviewDb: FirebaseFirestore) {
+fun AddReviewScreen(reviewDb: FirebaseFirestore, onAdd: () -> Unit) {
     var courseDepartment by remember { mutableStateOf("") }
     var courseNumber by remember { mutableStateOf("") }
     var professor by remember { mutableStateOf("") }
@@ -180,14 +180,15 @@ fun AddReviewScreen(reviewDb: FirebaseFirestore) {
             Button(
                 onClick = {
                     reviewDb.collection("reviews")
-                        .add(Review(courseDepartment, courseNumber, professor))
+                        .add(Review(courseDepartment, courseNumber, professor,courseReview,courseDifficulty,professorDifficulty,timeSpentPerWeek,recommendToOthers,useTextbook))
                         .addOnSuccessListener { documentReference ->
                             Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
                         }
                         .addOnFailureListener { e ->
                             Log.w(TAG, "Error adding document", e)
                         }
-                },
+                    onAdd()
+                          },
             ) {
                 Icon(imageVector = Icons.Default.Send, contentDescription = "Submit")
                 Text("Submit")

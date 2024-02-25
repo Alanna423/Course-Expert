@@ -44,63 +44,12 @@ fun ReviewPreview(review: Review, onExpand: () -> Unit) {
     }
 }
 
-@Composable
-fun ReviewExpanded(review: Review, onBack: () -> Unit) {
-    val context = LocalContext.current
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
-            Spacer(modifier = Modifier.width(8.dp))
-            Text("Back", modifier = Modifier.clickable { onBack() })
-        }
-
-        Text("Professor: ${review.professor}")
-        Text("Course Difficulty: ${review.courseDifficulty}")
-        Text("Professor Difficulty: ${review.professorDifficulty}")
-        Text("Recommend to Others: ${if (review.wouldRecommend) "Yes" else "No"}")
-        Text("Course Department: ${review.courseDepartment}")
-        Text("Course Number: ${review.courseNumber}")
-        Text("Course Review: ${review.textBody}")
-        Text("Time Spent per Week: ${review.timePerWeek} hours")
-        Text("Used Textbook: ${if (review.requiredTextbook) "Yes" else "No"}")
-    }
-}
 
 @Preview(showBackground = true)
 @Composable
 fun ReviewPreviewPreview() {
     CourseExpertTheme {
         ReviewPreview(
-            Review(
-                "CS",
-                "101",
-                "Dr. Smith",
-                "Great course!",
-                4,
-                3,
-                7,
-                false,
-                false
-            )
-        ) {}
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ReviewExpandedPreview() {
-    CourseExpertTheme {
-        ReviewExpanded(
             Review(
                 "CS",
                 "101",
