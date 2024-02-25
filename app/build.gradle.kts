@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -70,4 +71,8 @@ dependencies {
 
     val navVersion = "2.7.7"
     implementation("androidx.navigation:navigation-compose:$navVersion")
+
+    implementation(platform("com.google.firebase:firebase-bom:32.7.2"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-firestore")
 }

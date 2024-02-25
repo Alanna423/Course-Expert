@@ -26,6 +26,8 @@ import com.example.courseexpert.ui.OnboardingScreen
 import com.example.courseexpert.ui.ProfileScreen
 import com.example.courseexpert.ui.SearchScreen
 import com.example.courseexpert.ui.theme.CourseExpertTheme
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.firestore
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,6 +43,8 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun CourseExpertApp(appNavController: NavHostController = rememberNavController()) {
+    val reviewDb = Firebase.firestore
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -64,7 +68,7 @@ fun CourseExpertApp(appNavController: NavHostController = rememberNavController(
                     modifier = Modifier.padding(innerPadding)
                 ) {
                     composable(route = AppScreens.AddReview.name) {
-                        AddReviewScreen()
+                        AddReviewScreen(reviewDb)
                     }
                     composable(route = AppScreens.FAQ.name) {
                         FAQScreen()
@@ -73,7 +77,7 @@ fun CourseExpertApp(appNavController: NavHostController = rememberNavController(
                         ProfileScreen()
                     }
                     composable(route = AppScreens.Search.name) {
-                        SearchScreen()
+                        SearchScreen(reviewDb)
                     }
                 }
             }
