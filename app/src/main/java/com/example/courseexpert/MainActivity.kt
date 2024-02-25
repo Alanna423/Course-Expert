@@ -50,9 +50,6 @@ fun CourseExpertApp(appNavController: NavHostController = rememberNavController(
         val backStackEntry by appNavController.currentBackStackEntryAsState()
         var currentScreen = AppScreens.valueOf(backStackEntry?.destination?.route ?: AppScreens.Search.name)
 
-        val backStackEntry by appNavController.currentBackStackEntryAsState()
-        var currentScreen = AppScreens.valueOf(backStackEntry?.destination?.route ?: AppScreens.Search.name)
-
         if (showOnboarding) {
             OnboardingScreen()
         } else {
