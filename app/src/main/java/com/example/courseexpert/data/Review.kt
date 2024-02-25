@@ -11,3 +11,5 @@ data class Review(
     val wouldRecommend: Boolean = false,
     val requiredTextbook: Boolean = false
 )
+
+

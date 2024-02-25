@@ -12,6 +12,6 @@ fun ReviewPreview(review: Review) {
     Surface(
         color = MaterialTheme.colorScheme.surfaceVariant
     ) {
-        Text("$review")
+        Text("${review.courseDepartment}")
     }
 }
