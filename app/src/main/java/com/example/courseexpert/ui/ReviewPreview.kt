@@ -1,79 +1,163 @@
 package com.example.courseexpert.ui
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material3.Card
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.Visibility
+import com.example.courseexpert.R
 import com.example.courseexpert.data.Review
+import com.example.courseexpert.ui.theme.CourseExpertTheme
+import com.google.firebase.firestore.FirebaseFirestore
 
-// a shortened version of a single Review as a search result
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun ReviewPreview(review: Review) {
-    var expanded by remember { mutableStateOf(false) }
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
-            .clickable { expanded = true }
+fun ReviewPreview(review: Review, onExpand: () -> Unit) {
+    Surface(
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        modifier = Modifier.padding(20.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            Row(
+            Text("${review.courseDepartment} ${review.courseNumber}")
+            Text("Professor: ${review.professor}")
+            Text("Course Difficulty: ${review.courseDifficulty}")
+            Text("Professor Difficulty: ${review.professorDifficulty}")
+            Text("Recommend to Others: ${if (review.wouldRecommend) "Yes" else "No"}")
+
+            // Add an "Expand" button
+            Button(
+                onClick = { onExpand() },
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+                    .align(Alignment.End)
+                    .padding(top = 8.dp)
             ) {
-                Text("${review.courseDepartment} ${review.courseNumber}", style = LocalTextStyle.current.copy(fontSize = 20.sp, fontWeight = FontWeight.Bold))
-                IconButton(
-                    onClick = { expanded = !expanded },
-                    modifier = Modifier.size(48.dp)
-                ) {
-                    Icon(imageVector = Icons.Default.KeyboardArrowDown, contentDescription = "Expand")
-                }
-            }
-            if (expanded) {
-                ReviewExpanded(review = review)
+                Text("Expand")
             }
         }
     }
 }
 
 @Composable
-fun ReviewExpanded(review: Review) {
-    Column(
+fun ReviewExpanded(review: Review, onBack: () -> Unit) {
+    var showTextbookDetails by remember { mutableStateOf(false) }
+
+    Surface(
+        color = MaterialTheme.colorScheme.surfaceVariant,
         modifier = Modifier
             .fillMaxWidth()
+            .fillMaxHeight()
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            // Display detailed information
+            Text("Course Department: ${review.courseDepartment}")
+            Text("Course Number: ${review.courseNumber}")
+            Text("Professor: ${review.professor}")
+            Text("Course Review: ${review.textBody}")
+            Text("Course Difficulty: ${review.courseDifficulty}")
+            Text("Professor Difficulty: ${review.professorDifficulty}")
+            Text("Recommend to Others: ${if (review.wouldRecommend) "Yes" else "No"}")
+            Text("Time Spent per Week: ${review.timePerWeek} hours")
+
+            // Display Use Textbook details if it's set to true
+            if (review.requiredTextbook) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Used Textbook: Yes")
+
+                    IconButton(
+                        onClick = { showTextbookDetails = !showTextbookDetails },
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                    ) {
+                        Icon(
+                            imageVector = if (showTextbookDetails) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                            contentDescription = if (showTextbookDetails) "Hide Details" else "Show Details"
+                        )
+                    }
+                }
+
+                if (showTextbookDetails) {
+                    Text("Textbook Details: ${review.requiredTextbook}")
+                }
+            } else {
+                Text("Used Textbook: No")
+            }
+
+            // Add a back button
+            IconButton(
+                onClick = { onBack() },
+                modifier = Modifier
+                    .align(Alignment.Start)
+                    .padding(top = 16.dp)
+            ) {
+                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun ReviewScreen() {
+    val reviewList = remember { mutableStateListOf<Review>() }
+
+    // Mock data for testing
+    val mockReview = Review(
+        courseDepartment = "CS",
+        courseNumber = "101",
+        professor = "Dr. Smith",
+        textBody = "Great course!",
+        courseDifficulty = 3,
+        professorDifficulty = 4,
+        wouldRecommend = true,
+        timePerWeek = 10,
+        requiredTextbook = true,
+    )
+
+    var selectedReview by remember { mutableStateOf<Review?>(null) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
             .padding(16.dp)
     ) {
-        Text("Professor: ${review.professor}", style = LocalTextStyle.current.copy(fontSize = 16.sp))
-        Text("Course Difficulty: ${review.courseDifficulty}", style = LocalTextStyle.current.copy(fontSize = 16.sp))
-        Text("Professor Difficulty: ${review.professorDifficulty}", style = LocalTextStyle.current.copy(fontSize = 16.sp))
-        Text("Recommend to Others: ${if (review.wouldRecommend) "Yes" else "No"}", style = LocalTextStyle.current.copy(fontSize = 16.sp))
+        ReviewPreview(review = mockReview, onExpand = {
+            selectedReview = mockReview
+        })
+
+        selectedReview?.let { review ->
+            ReviewExpanded(review = review, onBack = {
+                selectedReview = null
+            })
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ReviewScreenPreview() {
+    CourseExpertTheme {
+        ReviewScreen()
     }
 }
