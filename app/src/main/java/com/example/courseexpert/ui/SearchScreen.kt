@@ -7,10 +7,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,9 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.courseexpert.data.Review
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.toObject
-
-//import com.example.courseexpert.ui.submitSearchQuery as submitSearchQuery1
+import com.example.courseexpert.ui.submitSearchQuery as submitSearchQuery1
 
 // this component is created from MainActivity.kt's CourseExpertApp Composable
 
@@ -36,75 +32,61 @@ data class Course(
     val courseTitle: String,
     val description: String
 )
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(reviewDb: FirebaseFirestore) {
     var courseNumber by remember { mutableStateOf("") }
     var courseDepartment by remember { mutableStateOf("") }
     var nonNullQuery by remember { mutableStateOf(false) }
 
-    Column(
-        modifier = Modifier.padding(10.dp)
-    ) {
+    Column() {
         var isExpanded by remember { mutableStateOf(false) }
-
-        ExposedDropdownMenuBox(
-            expanded = isExpanded,
-            onExpandedChange = { isExpanded = !isExpanded }) {
-            OutlinedTextField(
-                value = courseDepartment,
-                onValueChange = { courseDepartment = it },
-                readOnly = true,
-                label = {Text("Course Department")},
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded) },
-                modifier = Modifier.menuAnchor().padding(8.dp)
-            )
-            ExposedDropdownMenu(expanded = isExpanded, onDismissRequest = { isExpanded = false }) {
-                createCourseList().forEach { course ->
-                    DropdownMenuItem(text = { Text("${course.subject}") }, onClick = { courseDepartment = course.subject })
-                }
+        DropdownMenu(expanded = isExpanded, onDismissRequest = { isExpanded != isExpanded }) {
+            for (department in courseDepartments) {
+                DropdownMenuItem(text = {Text(department)}, onClick = {
+                    courseDepartment = department
+                    isExpanded = false
+                })
             }
-
         }
-
 
         OutlinedTextField(
             value = courseNumber,
-            onValueChange = { courseNumber = it },
-            label = { Text("Course Number") },
+            onValueChange = {courseNumber = it},
+            label = {Text("Course Number")},
             modifier = Modifier.padding(8.dp)
         )
 
         Button(onClick = {
             nonNullQuery = true
+            submitSearchQuery1(
+                courseDepartment = courseDepartment,
+                courseNumber = courseNumber,
+                reviewDb = reviewDb
+            )
         }) {
             Text("Search")
         }
 
         if (nonNullQuery) {
-            SearchQueryList(courseDepartment, courseNumber, reviewDb)
+            SearchQueryList(reviewDb)
         }
     }
 }
 
-// populates the course list DB
-//fun submitSearchQuery(reviewDb: FirebaseFirestore) {
-//    for (item in createCourseList()) {
-//        val courseDepartment = item.subject
-//        val courseNumber = item.classNumber
-//        if (courseDepartment != "") {
-//            if (courseNumber != null) {
-//                val course = Course(courseDepartment, courseNumber, "Course Title", "Course Description")
-//                addCoursesToFirestore(course, reviewDb)
-//            } else {
-//                Log.e(TAG, "Invalid course number format: $courseNumber")
-//            }
-//        } else {
-//            Log.e(TAG, "Both department and course number must be provided")
-//        }
-//    }
-//
-//}
+fun submitSearchQuery(courseDepartment: String, courseNumber: String, reviewDb: FirebaseFirestore) {
+    if (courseDepartment != "" || courseNumber != "") {
+        val courseNumberInt = courseNumber.toIntOrNull()
+
+        if (courseNumberInt != null) {
+            val course = Course(courseDepartment, courseNumberInt, "Course Title", "Course Description")
+            addCoursesToFirestore(course, reviewDb)
+        } else {
+            Log.e(TAG, "Invalid course number format: $courseNumber")
+        }
+    } else {
+        Log.e(TAG, "Both department and course number must be provided")
+    }
+}
 
 fun addCoursesToFirestore(course: Course, reviewDb: FirebaseFirestore) {
     val collectionReference = reviewDb.collection("courses")
@@ -119,19 +101,17 @@ fun addCoursesToFirestore(course: Course, reviewDb: FirebaseFirestore) {
 }
 
 @Composable
-fun SearchQueryList(courseDepartment: String, courseNumber: String, reviewDb: FirebaseFirestore) {
+fun SearchQueryList(reviewDb: FirebaseFirestore) {
     val reviewList = remember { mutableStateListOf<Review>() }
 
-    if (courseDepartment!="") {
-        LaunchedEffect(key1 = 6) {
-            reviewDb.collection("reviews").whereEqualTo("courseDepartment",courseDepartment).get()
-                .addOnSuccessListener{ list ->
-                    for (item in list) {
-                        val review = item.toObject(Review::class.java)
-                        reviewList.add(review)
-                    }
+    LaunchedEffect(key1 = 1) {
+        reviewDb.collection("reviews").get()
+            .addOnSuccessListener{ list ->
+                for (item in list) {
+                    val review = item.toObject(Review::class.java)
+                    reviewList.add(review)
                 }
-        }
+            }
     }
 
     LazyColumn() {
@@ -165,3 +145,5 @@ fun createCourseList(): List<Course> {
         Course("COMM", 250, "Introduction to Communication Studies", "Basic principles of communication and media studies.")
     )
 }
+
+val courseDepartments = listOf("COMP","PSYC","STOR","GEOG","ANTH","CHIN","MUSC")
