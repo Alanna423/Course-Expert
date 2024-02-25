@@ -1,5 +1,7 @@
 package com.example.courseexpert.ui
 
+import android.content.ContentValues.TAG
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,13 +25,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.courseexpert.ui.theme.CourseExpertTheme
+import com.example.courseexpert.data.Review
+import com.google.firebase.firestore.FirebaseFirestore
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
-fun AddReviewScreen() {
+fun AddReviewScreen(reviewDb: FirebaseFirestore) {
     var courseDepartment by remember { mutableStateOf("") }
     var courseNumber by remember { mutableStateOf("") }
     var professor by remember { mutableStateOf("") }
@@ -126,7 +128,14 @@ fun AddReviewScreen() {
 
         Button(
             onClick = {
-                // add submission logic
+                reviewDb.collection("reviews")
+                    .add(Review(courseDepartment,courseNumber,professor))
+                    .addOnSuccessListener { documentReference ->
+                        Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
+                    }
+                    .addOnFailureListener { e ->
+                        Log.w(TAG, "Error adding document", e)
+                    }
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -135,13 +144,5 @@ fun AddReviewScreen() {
             Icon(imageVector = Icons.Default.Send, contentDescription = "Submit")
             Text("Submit")
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun AddReviewScreenPreview() {
-    CourseExpertTheme {
-        AddReviewScreen()
     }
 }
