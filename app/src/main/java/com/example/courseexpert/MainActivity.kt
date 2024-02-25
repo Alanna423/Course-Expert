@@ -51,7 +51,7 @@ fun CourseExpertApp(appNavController: NavHostController = rememberNavController(
         var currentScreen = AppScreens.valueOf(backStackEntry?.destination?.route ?: AppScreens.Search.name)
 
         if (showOnboarding) {
-            OnboardingScreen(onLogin = {showOnboarding = false})
+            OnboardingScreen()
         } else {
             Scaffold(
                 bottomBar = {
