@@ -13,6 +13,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -67,16 +68,15 @@ fun submitSearchQuery(courseDepartment: String, courseNumber: String) {
 fun SearchQueryList(reviewDb: FirebaseFirestore) {
     val reviewList = remember { mutableStateListOf<Review>() }
 
-    reviewDb.collection("reviews").get()
-        .addOnSuccessListener{ list ->
-            for (item in list) {
-                val review = item.toObject(Review::class.java)
-                reviewList.add(review)
+    LaunchedEffect(key1 = 1) {
+        reviewDb.collection("reviews").get()
+            .addOnSuccessListener{ list ->
+                for (item in list) {
+                    val review = item.toObject(Review::class.java)
+                    reviewList.add(review)
+                }
             }
-        }
-
-    Log.d(TAG, "${reviewList.size} uhh")
-    Log.d(TAG, "view above")
+    }
 
     LazyColumn() {
         items(reviewList) { review ->
