@@ -60,7 +60,7 @@ fun FAQScreen() {
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            Text("About Us / FAQs", fontSize = 40.sp, style = gloriaStyle)
+            Text(" About Us / FAQs", fontSize = 40.sp, style = gloriaStyle)
             Text("")
             Text("About Course Expert:", fontSize = 25.sp)
             Text("")
