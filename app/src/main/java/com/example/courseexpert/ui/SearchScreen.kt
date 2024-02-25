@@ -2,7 +2,9 @@ package com.example.courseexpert.ui
 
 import android.content.ContentValues.TAG
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -21,7 +23,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.courseexpert.R
 import com.example.courseexpert.data.Review
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
@@ -42,6 +51,16 @@ fun SearchScreen(reviewDb: FirebaseFirestore) {
     var courseNumber by remember { mutableStateOf("") }
     var courseDepartment by remember { mutableStateOf("") }
     var nonNullQuery by remember { mutableStateOf(false) }
+    val backgroundImage: Painter = painterResource(id = R.drawable.background)
+    val gloriaFontFamily = FontFamily(Font(R.font.gloria))
+    val gloriaStyle = androidx.compose.ui.text.TextStyle(fontFamily = gloriaFontFamily, fontWeight = FontWeight.Normal)
+
+    Image(
+        painter = backgroundImage,
+        contentDescription = null,
+        modifier = Modifier.fillMaxSize(),
+        contentScale = ContentScale.FillBounds
+    )
 
     Column(
         modifier = Modifier.padding(10.dp)
