@@ -198,5 +198,4 @@ fun CreateAccount(onSubmit: () -> Unit) {
             Text("Create Account", fontSize = 25.sp)
         }
     }
-
 }
