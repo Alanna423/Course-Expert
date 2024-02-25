@@ -2,6 +2,9 @@ package com.example.courseexpert.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -32,8 +35,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.courseexpert.R
 import com.example.courseexpert.ui.theme.CourseExpertTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,7 +60,12 @@ fun AddReviewScreen() {
     var timeSpentPerWeek by remember { mutableStateOf(1) }
     var useTextbook by remember { mutableStateOf(false) }
 
-    Column(
+    val backgroundImage: Painter = painterResource(id = R.drawable.background)
+    val gloriaFontFamily = FontFamily(Font(R.font.gloria))
+    val gloriaStyle = androidx.compose.ui.text.TextStyle(fontFamily = gloriaFontFamily, fontWeight = FontWeight.Normal)
+
+
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
@@ -91,23 +107,69 @@ fun AddReviewScreen() {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp)
+    ) {
+        Image(
+            painter = backgroundImage,
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.FillBounds
         )
+        Text("Add a Review", fontSize = 40.sp, modifier = Modifier.align(Alignment.TopCenter).padding(top = 20.dp), style = gloriaStyle)
+        Row(verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center) {
+            OutlinedTextField(
+                value = courseDepartment,
+                onValueChange = { courseDepartment = it },
+                label = { Text("Course Department") },
+                modifier = Modifier
+                    .padding(8.dp, top = 100.dp).width(200.dp)
+            )
 
-        Text("Professor Difficulty: $professorDifficulty")
-        Slider(
-            value = professorDifficulty.toFloat(),
-            onValueChange = { professorDifficulty = it.toInt() },
-            valueRange = 1f..5f,
-            steps = 4,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-        )
+            OutlinedTextField(
+                value = courseNumber,
+                onValueChange = { courseNumber = it },
+                label = { Text("Course Number") },
+                modifier = Modifier
+                    .padding(8.dp).padding(top = 100.dp)
+            )
+        }
+        Column(verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(top = 200.dp, bottom = 25.dp)) {
+            Text("Course Difficulty: $courseDifficulty")
+            Slider(
+                value = courseDifficulty.toFloat(),
+                onValueChange = { courseDifficulty = it.toInt() },
+                valueRange = 1f..5f,
+                steps = 4,
+                modifier = Modifier
+                    .padding(8.dp)
+            )
 
+            Text("Professor Difficulty: $professorDifficulty")
+            Slider(
+                value = professorDifficulty.toFloat(),
+                onValueChange = { professorDifficulty = it.toInt() },
+                valueRange = 1f..5f,
+                steps = 4,
+                modifier = Modifier
+                    .padding(8.dp)
+            )
+            Text(
+                "Time Spent per Week: $timeSpentPerWeek hours"
+            )
+            Slider(
+                value = timeSpentPerWeek.toFloat(),
+                onValueChange = { timeSpentPerWeek = it.toInt() },
+                valueRange = 1f..20f,
+                steps = 19,
+                modifier = Modifier
+                    .padding(8.dp)
+            )
+        }
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
+                .padding(8.dp, top = 500.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text("Recommend to Others")
@@ -117,25 +179,12 @@ fun AddReviewScreen() {
                 onCheckedChange = { recommendToOthers = it },
             )
         }
-
-        Text("Time Spent per Week: $timeSpentPerWeek hours")
-        Slider(
-            value = timeSpentPerWeek.toFloat(),
-            onValueChange = { timeSpentPerWeek = it.toInt() },
-            valueRange = 1f..20f,
-            steps = 19,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-        )
-
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
+                .padding(8.dp).padding(top=450.dp, bottom = 25.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Did you use Textbook")
+            Text("Did you use Textbook?")
             Spacer(modifier = Modifier.width(8.dp))
             Switch(
                 checked = useTextbook,
@@ -164,8 +213,7 @@ fun AddReviewScreen() {
                 // add submission logic
             },
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
+                .padding(8.dp).align(Alignment.BottomCenter)
         ) {
             Icon(imageVector = Icons.Default.Send, contentDescription = "Submit")
             Text("Submit")
