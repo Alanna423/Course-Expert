@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "198289906422",
+    "project_id": "review-db-4512e",
+    "storage_bucket": "review-db-4512e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:198289906422:android:918cf1a421b57f395dead7",
+        "android_client_info": {
+          "package_name": "com.example.courseexpert"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD4iA7kGyJobzijpSiWh3F4e5swj4TCRqA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
