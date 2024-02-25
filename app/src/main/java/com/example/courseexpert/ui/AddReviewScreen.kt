@@ -180,7 +180,7 @@ fun AddReviewScreen(reviewDb: FirebaseFirestore, onAdd: () -> Unit) {
             Button(
                 onClick = {
                     reviewDb.collection("reviews")
-                        .add(Review(courseDepartment, courseNumber, professor))
+                        .add(Review(courseDepartment, courseNumber, professor,courseReview,courseDifficulty,professorDifficulty,timeSpentPerWeek,recommendToOthers,useTextbook))
                         .addOnSuccessListener { documentReference ->
                             Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
                         }

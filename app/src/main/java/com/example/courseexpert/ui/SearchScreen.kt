@@ -136,7 +136,6 @@ fun SearchQueryList(navController: NavHostController, courseDepartment: String, 
 
 @Composable
 fun ReviewExpanded(navController: NavHostController, review: Review, onBack: () -> Unit) {
-    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -149,12 +148,9 @@ fun ReviewExpanded(navController: NavHostController, review: Review, onBack: () 
                 .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
             Spacer(modifier = Modifier.width(8.dp))
-            Text("Back", modifier = Modifier.clickable {
-                onBack()
-                navController.popBackStack()
-            })
+            Button(onClick =
+                onBack) {Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")}
         }
 
         Text("Professor: ${review.professor}")
