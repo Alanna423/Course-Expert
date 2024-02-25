@@ -82,7 +82,7 @@ fun SearchScreen(reviewDb: FirebaseFirestore) {
         }
 
         if (nonNullQuery) {
-            SearchQueryList(reviewDb)
+            SearchQueryList(courseDepartment, courseNumber, reviewDb)
         }
     }
 }
@@ -119,17 +119,19 @@ fun addCoursesToFirestore(course: Course, reviewDb: FirebaseFirestore) {
 }
 
 @Composable
-fun SearchQueryList(reviewDb: FirebaseFirestore) {
+fun SearchQueryList(courseDepartment: String, courseNumber: String, reviewDb: FirebaseFirestore) {
     val reviewList = remember { mutableStateListOf<Review>() }
 
-    LaunchedEffect(key1 = 1) {
-        reviewDb.collection("reviews").get()
-            .addOnSuccessListener{ list ->
-                for (item in list) {
-                    val review = item.toObject(Review::class.java)
-                    reviewList.add(review)
+    if (courseDepartment!="") {
+        LaunchedEffect(key1 = 6) {
+            reviewDb.collection("reviews").whereEqualTo("courseDepartment",courseDepartment).get()
+                .addOnSuccessListener{ list ->
+                    for (item in list) {
+                        val review = item.toObject(Review::class.java)
+                        reviewList.add(review)
+                    }
                 }
-            }
+        }
     }
 
     LazyColumn() {
