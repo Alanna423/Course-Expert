@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -72,19 +74,36 @@ fun OnboardingScreen(onLogin: () -> Unit, reviewDb: FirebaseFirestore) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
-                Button(onClick = { showLogin = true }) {
-                    Text(
-                        "Login",
-                        fontSize = 30.sp,
-                        textAlign = TextAlign.Center
-                    )
-                }
-                Button(onClick = { showLogin = false }) {
-                    Text(
-                        "Create Account",
-                        fontSize = 30.sp,
-                        textAlign = TextAlign.Center
-                    )
+                if (showLogin) {
+                    Button(onClick = { showLogin = true }) {
+                        Text(
+                            "Login",
+                            fontSize = 30.sp,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                    OutlinedButton(onClick = { showLogin = false }) {
+                        Text(
+                            "Create Account",
+                            fontSize = 30.sp,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                } else {
+                    OutlinedButton(onClick = { showLogin = true }) {
+                        Text(
+                            "Login",
+                            fontSize = 30.sp,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                    Button(onClick = { showLogin = false }) {
+                        Text(
+                            "Create Account",
+                            fontSize = 30.sp,
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
             }
             Spacer(Modifier.padding(30.dp))

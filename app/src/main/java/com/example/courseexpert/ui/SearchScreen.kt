@@ -1,19 +1,29 @@
 package com.example.courseexpert.ui
 
-import android.content.ContentValues.TAG
-import android.util.Log
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -22,18 +32,20 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.example.courseexpert.R
 import com.example.courseexpert.data.Review
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.toObject
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 
 //import com.example.courseexpert.ui.submitSearchQuery as submitSearchQuery1
 
@@ -45,12 +57,14 @@ data class Course(
     val courseTitle: String,
     val description: String
 )
+@RequiresApi(Build.VERSION_CODES.Q)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchScreen(reviewDb: FirebaseFirestore) {
+fun SearchScreen(navController: NavHostController, reviewDb: FirebaseFirestore) {
     var courseNumber by remember { mutableStateOf("") }
     var courseDepartment by remember { mutableStateOf("") }
     var nonNullQuery by remember { mutableStateOf(false) }
+
     val backgroundImage: Painter = painterResource(id = R.drawable.background)
     val gloriaFontFamily = FontFamily(Font(R.font.gloria))
     val gloriaStyle = androidx.compose.ui.text.TextStyle(fontFamily = gloriaFontFamily, fontWeight = FontWeight.Normal)
@@ -74,7 +88,7 @@ fun SearchScreen(reviewDb: FirebaseFirestore) {
                 value = courseDepartment,
                 onValueChange = { courseDepartment = it },
                 readOnly = true,
-                label = {Text("Course Department")},
+                label = { Text("Course Department") },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded) },
                 modifier = Modifier.menuAnchor().padding(8.dp)
             )
@@ -83,9 +97,7 @@ fun SearchScreen(reviewDb: FirebaseFirestore) {
                     DropdownMenuItem(text = { Text("${course.subject}") }, onClick = { courseDepartment = course.subject })
                 }
             }
-
         }
-
 
         OutlinedTextField(
             value = courseNumber,
@@ -101,50 +113,19 @@ fun SearchScreen(reviewDb: FirebaseFirestore) {
         }
 
         if (nonNullQuery) {
-            SearchQueryList(courseDepartment, courseNumber, reviewDb)
+            SearchQueryList(navController, courseDepartment, courseNumber, reviewDb)
         }
     }
 }
 
-// populates the course list DB
-//fun submitSearchQuery(reviewDb: FirebaseFirestore) {
-//    for (item in createCourseList()) {
-//        val courseDepartment = item.subject
-//        val courseNumber = item.classNumber
-//        if (courseDepartment != "") {
-//            if (courseNumber != null) {
-//                val course = Course(courseDepartment, courseNumber, "Course Title", "Course Description")
-//                addCoursesToFirestore(course, reviewDb)
-//            } else {
-//                Log.e(TAG, "Invalid course number format: $courseNumber")
-//            }
-//        } else {
-//            Log.e(TAG, "Both department and course number must be provided")
-//        }
-//    }
-//
-//}
-
-fun addCoursesToFirestore(course: Course, reviewDb: FirebaseFirestore) {
-    val collectionReference = reviewDb.collection("courses")
-
-    collectionReference.add(course)
-        .addOnSuccessListener { documentReference ->
-            Log.d(TAG, "Document added with ID: ${documentReference.id}")
-        }
-        .addOnFailureListener { e ->
-            Log.w(TAG, "Error adding document: ", e)
-        }
-}
-
 @Composable
-fun SearchQueryList(courseDepartment: String, courseNumber: String, reviewDb: FirebaseFirestore) {
+fun SearchQueryList(navController: NavHostController, courseDepartment: String, courseNumber: String, reviewDb: FirebaseFirestore) {
     val reviewList = remember { mutableStateListOf<Review>() }
 
-    if (courseDepartment!="") {
+    if (courseDepartment != "") {
         LaunchedEffect(key1 = 6) {
-            reviewDb.collection("reviews").whereEqualTo("courseDepartment",courseDepartment).get()
-                .addOnSuccessListener{ list ->
+            reviewDb.collection("reviews").whereEqualTo("courseDepartment", courseDepartment).get()
+                .addOnSuccessListener { list ->
                     for (item in list) {
                         val review = item.toObject(Review::class.java)
                         reviewList.add(review)
@@ -153,9 +134,61 @@ fun SearchQueryList(courseDepartment: String, courseNumber: String, reviewDb: Fi
         }
     }
 
-    LazyColumn() {
-        items(reviewList) { review ->
-            ReviewPreview(review)
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        // ReviewPreview composable for each review
+        LazyColumn {
+            items(reviewList) { review ->
+                var isExpanded by remember { mutableStateOf(false) }
+
+                if (isExpanded) {
+                    ReviewExpanded(review, onBack = {
+                        isExpanded = false
+                    })
+                } else {
+                    ReviewPreview(review, onExpand = {
+                        isExpanded = true
+                    })
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ReviewExpanded(review: Review, onBack: () -> Unit) {
+    Surface(
+        color = MaterialTheme.colorScheme.surface,
+        modifier = Modifier.padding(8.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Spacer(modifier = Modifier.width(8.dp))
+                Button(onClick =
+                onBack) {Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")}
+            }
+
+            Text("Professor: ${review.professor}")
+            Text("Course Difficulty: ${review.courseDifficulty}")
+            Text("Professor Difficulty: ${review.professorDifficulty}")
+            Text("Recommend to Others: ${if (review.wouldRecommend) "Yes" else "No"}")
+            Text("Course Department: ${review.courseDepartment}")
+            Text("Course Number: ${review.courseNumber}")
+            Text("Course Review: ${review.textBody}")
+            Text("Time Spent per Week: ${review.timePerWeek} hours")
+            Text("Used Textbook: ${if (review.requiredTextbook) "Yes" else "No"}")
         }
     }
 }

@@ -77,7 +77,7 @@ fun CourseExpertApp(appNavController: NavHostController = rememberNavController(
                         ProfileScreen()
                     }
                     composable(route = AppScreens.Search.name) {
-                        SearchScreen(reviewDb)
+                        SearchScreen(appNavController,reviewDb)
                     }
                 }
             }
