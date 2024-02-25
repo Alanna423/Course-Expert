@@ -55,7 +55,7 @@ fun CourseExpertApp(appNavController: NavHostController = rememberNavController(
         var currentScreen = AppScreens.valueOf(backStackEntry?.destination?.route ?: AppScreens.Search.name)
 
         if (showOnboarding) {
-            OnboardingScreen(onLogin = {showOnboarding = false})
+            OnboardingScreen(onLogin = {showOnboarding = false}, reviewDb)
         } else {
             Scaffold(
                 bottomBar = {
@@ -68,7 +68,7 @@ fun CourseExpertApp(appNavController: NavHostController = rememberNavController(
                     modifier = Modifier.padding(innerPadding)
                 ) {
                     composable(route = AppScreens.AddReview.name) {
-                        AddReviewScreen(reviewDb)
+                        AddReviewScreen(reviewDb, onAdd = {appNavController.navigate(AppScreens.Search.name)})
                     }
                     composable(route = AppScreens.FAQ.name) {
                         FAQScreen()

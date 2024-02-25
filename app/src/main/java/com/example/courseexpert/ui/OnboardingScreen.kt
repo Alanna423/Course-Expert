@@ -31,11 +31,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.courseexpert.R
+import com.google.firebase.firestore.FirebaseFirestore
 
 
 // this component is created from MainActivity.kt's CourseExpertApp Composable
 @Composable
-fun OnboardingScreen(onLogin: () -> Unit) {
+fun OnboardingScreen(onLogin: () -> Unit, reviewDb: FirebaseFirestore) {
     var showLogin by remember { mutableStateOf(true) }
     Box(modifier = Modifier.fillMaxSize()) {
         // Load your image from resources
@@ -89,9 +90,9 @@ fun OnboardingScreen(onLogin: () -> Unit) {
             Spacer(Modifier.padding(30.dp))
 
             if (showLogin) {
-                Login(onSubmit = onLogin)
+                Login(onSubmit = onLogin, reviewDb)
             } else {
-                CreateAccount(onSubmit = onLogin)
+                CreateAccount(onSubmit = onLogin, reviewDb)
             }
         }
 
@@ -99,7 +100,7 @@ fun OnboardingScreen(onLogin: () -> Unit) {
 }
 
 @Composable
-fun Login(onSubmit: () -> Unit) {
+fun Login(onSubmit: () -> Unit, reviewDb: FirebaseFirestore) {
     Column() {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -135,7 +136,9 @@ fun Login(onSubmit: () -> Unit) {
         )
         Spacer(Modifier.padding(10.dp))
         Button(
-            onClick = onSubmit,
+            onClick =
+                    onSubmit
+                ,
             modifier = Modifier
                 .padding(bottom = 20.dp).align(CenterHorizontally)
         ) {
@@ -145,7 +148,7 @@ fun Login(onSubmit: () -> Unit) {
 }
 
 @Composable
-fun CreateAccount(onSubmit: () -> Unit) {
+fun CreateAccount(onSubmit: () -> Unit, reviewDb: FirebaseFirestore) {
     Column() {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -191,7 +194,10 @@ fun CreateAccount(onSubmit: () -> Unit) {
         )
         Spacer(Modifier.padding(10.dp))
         Button(
-            onClick = onSubmit,
+            onClick = {
+            reviewDb.collection("profiles").add(Profile(txt.text,txt2.text))
+                onSubmit()
+                      },
             modifier = Modifier
                 .padding(bottom = 20.dp).align(CenterHorizontally)
         ) {
@@ -199,3 +205,8 @@ fun CreateAccount(onSubmit: () -> Unit) {
         }
     }
 }
+
+data class Profile(
+    val email: String,
+    val password: String
+)
