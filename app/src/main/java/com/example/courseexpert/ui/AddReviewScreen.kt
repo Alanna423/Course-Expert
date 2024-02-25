@@ -38,6 +38,18 @@ import androidx.compose.ui.unit.dp
 import com.example.courseexpert.data.Review
 import com.google.firebase.firestore.FirebaseFirestore
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
+import com.example.courseexpert.R
+
 
 @Composable
 fun AddReviewScreen(reviewDb: FirebaseFirestore) {
@@ -51,65 +63,79 @@ fun AddReviewScreen(reviewDb: FirebaseFirestore) {
     var timeSpentPerWeek by remember { mutableStateOf(1) }
     var useTextbook by remember { mutableStateOf(false) }
 
-    Column(
+    val backgroundImage: Painter = painterResource(id = R.drawable.background)
+    val gloriaFontFamily = FontFamily(Font(R.font.gloria))
+    val gloriaStyle = androidx.compose.ui.text.TextStyle(fontFamily = gloriaFontFamily, fontWeight = FontWeight.Normal)
+
+
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        OutlinedTextField(
-            value = courseDepartment,
-            onValueChange = { courseDepartment = it },
-            label = { Text("Course Department") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
+        Image(
+            painter = backgroundImage,
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.FillBounds
         )
+        Text("Add a Review", fontSize = 40.sp, modifier = Modifier.align(Alignment.TopCenter).padding(top = 20.dp), style = gloriaStyle)
+        Row(verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center) {
+            OutlinedTextField(
+                value = courseDepartment,
+                onValueChange = { courseDepartment = it },
+                label = { Text("Course Department") },
+                modifier = Modifier
+                    .padding(8.dp, top = 100.dp).width(200.dp)
+            )
 
-        OutlinedTextField(
-            value = courseNumber,
-            onValueChange = { courseNumber = it },
-            label = { Text("Course Number") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-        )
+            OutlinedTextField(
+                value = courseNumber,
+                onValueChange = { courseNumber = it },
+                label = { Text("Course Number") },
+                modifier = Modifier
+                    .padding(8.dp).padding(top = 100.dp)
+            )
+        }
+        Column(verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(top = 200.dp, bottom = 25.dp)) {
+            Text("Course Difficulty: $courseDifficulty")
+            Slider(
+                value = courseDifficulty.toFloat(),
+                onValueChange = { courseDifficulty = it.toInt() },
+                valueRange = 1f..5f,
+                steps = 4,
+                modifier = Modifier
+                    .padding(8.dp)
+            )
 
-        OutlinedTextField(
-            value = professor,
-            onValueChange = { professor = it },
-            label = { Text("Professor Name") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-        )
+            Text("Professor Difficulty: $professorDifficulty")
+            Slider(
+                value = professorDifficulty.toFloat(),
+                onValueChange = { professorDifficulty = it.toInt() },
+                valueRange = 1f..5f,
+                steps = 4,
+                modifier = Modifier
+                    .padding(8.dp)
+            )
 
-        Text("Course Difficulty: $courseDifficulty")
-        Slider(
-            value = courseDifficulty.toFloat(),
-            onValueChange = { courseDifficulty = it.toInt() },
-            valueRange = 1f..5f,
-            steps = 4,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-        )
-
-        Text("Professor Difficulty: $professorDifficulty")
-        Slider(
-            value = professorDifficulty.toFloat(),
-            onValueChange = { professorDifficulty = it.toInt() },
-            valueRange = 1f..5f,
-            steps = 4,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-        )
+            Text(
+                "Time Spent per Week: $timeSpentPerWeek hours"
+            )
+            Slider(
+                value = timeSpentPerWeek.toFloat(),
+                onValueChange = { timeSpentPerWeek = it.toInt() },
+                valueRange = 1f..20f,
+                steps = 19,
+                modifier = Modifier
+                    .padding(8.dp)
+            )
+        }
 
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
+            modifier = Modifier.padding(8.dp, top = 500.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text("Recommend to Others")
@@ -120,21 +146,10 @@ fun AddReviewScreen(reviewDb: FirebaseFirestore) {
             )
         }
 
-        Text("Time Spent per Week: $timeSpentPerWeek hours")
-        Slider(
-            value = timeSpentPerWeek.toFloat(),
-            onValueChange = { timeSpentPerWeek = it.toInt() },
-            valueRange = 1f..20f,
-            steps = 19,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-        )
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp),
+                .padding(8.dp).padding(top=450.dp, bottom = 25.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text("Did you use Textbook")
@@ -144,22 +159,27 @@ fun AddReviewScreen(reviewDb: FirebaseFirestore) {
                 onCheckedChange = { useTextbook = it },
             )
         }
-
-        Text("Course Review")
-        BasicTextField(
-            value = courseReview,
-            onValueChange = { courseReview = it },
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Text
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-                .background(MaterialTheme.colorScheme.background)
-                .border(1.dp, MaterialTheme.colorScheme.primary)
-                .padding(16.dp)
-                .heightIn(min = 100.dp)
-        )
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(top = 570.dp)
+        ) {
+            Text("Course Review")
+            BasicTextField(
+                value = courseReview,
+                onValueChange = { courseReview = it },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Text
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+                    .background(MaterialTheme.colorScheme.background)
+                    .border(1.dp, MaterialTheme.colorScheme.primary)
+                    .padding(16.dp)
+                    .heightIn(min = 100.dp)
+            )
+        }
 
         Button(
             onClick = {
@@ -172,9 +192,7 @@ fun AddReviewScreen(reviewDb: FirebaseFirestore) {
                         Log.w(TAG, "Error adding document", e)
                     }
             },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
+            modifier = Modifier.padding(8.dp).align(Alignment.BottomCenter)
         ) {
             Icon(imageVector = Icons.Default.Send, contentDescription = "Submit")
             Text("Submit")
