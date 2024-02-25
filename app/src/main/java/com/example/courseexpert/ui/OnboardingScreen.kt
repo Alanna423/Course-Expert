@@ -55,10 +55,8 @@ import java.time.format.TextStyle
 //}
 
 // this component is created from MainActivity.kt's CourseExpertApp Composable
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview(showBackground = true)
 @Composable
-fun OnboardingScreen() {
+fun OnboardingScreen(onLogin: () -> Unit) {
     Box(modifier = Modifier.fillMaxSize()) {
         // Load your image from resources
         val backgroundImage: Painter = painterResource(id = R.drawable.background)
@@ -153,12 +151,12 @@ fun OnboardingScreen() {
             )
         }
         Button(
-            onClick = { /*TODO*/ }, modifier = Modifier
+            onClick = onLogin,
+            modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 20.dp)
         ) {
             Text("Create Account", fontSize = 25.sp)
         }
     }
-    }
-//@Composable
+}
